@@ -370,6 +370,14 @@ class Microstructures():
 		
 		return(newtree,newlabels)
 	
+	def ensure_precision(self,arbor):
+		for branch in arbor.keys():
+			for s,section in enumerate(arbor[branch]):
+				for p,point in enumerate(section):
+					arbor[branch][s][p] = [round(item,4) for item in point]
+		
+		return(arbor)
+	
 	def add_microstructures_to_arbor(self,arbor,mbranches,bbranches):
 		"""
 		
@@ -385,6 +393,7 @@ class Microstructures():
 		arbor_labels = dict(zip([key for key in arbor.keys()],[[] for key in arbor.keys()]))
 		arbor,arbor_labels = self.myelinate_branches(arbor,arbor_labels,mbranches)
 		arbor,arbor_labels = self.bouton_branches(arbor,arbor_labels,bbranches)
+		arbor = self.ensure_precision(arbor)
 		return(arbor,arbor_labels)
 	
 	def testfuncs(self):

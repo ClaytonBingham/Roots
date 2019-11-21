@@ -122,6 +122,9 @@ class swcVisualizer():
 		return(segments)
 	
 	def unzip_sectioned_arbor(self,arbor):
+		if arbor is None:
+			return({},{},{},{})
+		
 		x = {}
 		y = {}
 		z = {}
@@ -229,8 +232,10 @@ class swcVisualizer():
 	def close(self):
 		mlab.close(all=True)
 	
-	def mplot_sectioned_arbor(self,arbor,colors = [(0.29, 0.58, 0.67),(0.82, 0.35, 0.24)],show=True):
-		fig = mlab.figure(bgcolor=(42/255.0,56/255.0,54/255.0),size=(1280,720))
+	def mplot_sectioned_arbor(self,fig=None,arbor=None,colors = [(0.29, 0.58, 0.67),(0.82, 0.35, 0.24)],view=True):
+		if fig is None:
+			fig = mlab.figure(bgcolor=(42/255.0,56/255.0,54/255.0),size=(1280,720))
+		
 		colorind = 0
 		myav_coords = []
 		myav_diams = []
@@ -262,7 +267,7 @@ class swcVisualizer():
 	#		_=mlab.view(azimuth=0,elevation=0)
 	#		_=mlab.savefig('pic%.4d.png' % ii, size=(800,600))
 	#	mlab.savefig('pic%.4d.png' % tstep,size=(1200,900))
-		if show:
+		if view:
 			mlab.show()
 	
 	

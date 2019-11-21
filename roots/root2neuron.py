@@ -23,6 +23,7 @@ class Root2Hoc():
 			if any(isinstance(i, list) for i in li[0]):
 				for section in li:
 					newli.append([point[:3] for point in section])
+				
 				return(newli)
 			
 			else:
