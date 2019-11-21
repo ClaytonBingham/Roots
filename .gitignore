@@ -1,0 +1,26 @@
+# Compiled python modules.
+*.pyc
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info/home/clayton/source/Roots/LICENSE
+
+# Hoc scripts
+*.hoc
+
+# Random datafiles
+*.swc
+*.csv
+*.zip
+*.pickle
+
+
+
+# Supporting Python Scripts
+cylinder_axons.py
+label_intersegments.py
+GrowSTN_morph.py
+adddetail_and_write_to_hoc.py
+load_swc_test.py

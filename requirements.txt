@@ -1,0 +1,7 @@
+numpy
+matplotlib
+networkx
+mayavi
+mpl_toolkits
+scipy
+scikit-learn
