@@ -9,7 +9,7 @@ from shapely import wkt
 from scipy.spatial.distance import cdist
 
 class Microstructures():
-	'''
+	"""
 	A class to add microstructures such as boutons and myelin to an axon morphology
 	
 	```
@@ -21,7 +21,7 @@ class Microstructures():
 	mstruct.add_microstructures_to_arbor(arbor,mbranches,bbranches)
 	```
 	
-	'''
+	"""
 	
 	def __init__(self):
 		pass
@@ -44,11 +44,11 @@ class Microstructures():
 		return(arbor)
 	
 	def eucdist3d(self,point1,point2):
-		'''
+		"""
 		
 		euclidean distance between point1 and point2 - [x,y,z]
 		
-		'''
+		"""
 #		if not isinstance(point1,np.ndarray):
 #			point1 = np.array(point1)
 #			point2 = np.array(point2)
@@ -56,13 +56,13 @@ class Microstructures():
 		return(((point2[0]-point1[0])**2 + (point2[1]-point1[1])**2 + (point2[2]-point1[2])**2)**0.5)
 	
 	def branchLength(self,branch):
-		'''
+		"""
 		
 		branch - list of points comprising a branch
 		returns - the path length of the branch
 		
 		
-		'''
+		"""
 		
 		length = 0
 		for p,point in enumerate(branch[:-1]):
@@ -87,14 +87,14 @@ class Microstructures():
 		return(new)
 	
 	def spline_branch(self,branch,interval=1.0):
-		'''
+		"""
 		
 		Spline branch to evenly spread points to make re-sectioning by myelin or boutons easier
 		
 		branch - list of points comprising a branch
 		interval - maximum distance between points in newly splined branch
 		
-		'''
+		"""
 		
 		number_of_points = int(round(self.branchLength(branch)/interval,0))+1
 		line = LineString([tuple(point[:3]) for point in branch])
@@ -127,13 +127,13 @@ class Microstructures():
 #		return(list(zip(fx(newx),fy(newy),fz(newz),fr(newr))))
 	
 	def find_optimal_segmentation_length(self,blength,seg_range):
-		'''
+		"""
 		
 		blength - length of the branch in microns
 		seg_range - acceptable range of lengths for node+paranode1+paranode2+internode+paranode2+paranode1 length (as a unit of myelination) or interbouton+bouton length (as a unit of bouton size)
 		returns - a list of segment lengths that optimally divides a branch into myelinated/boutoned regions
 		
-		'''
+		"""
 		seg_range = self.generate_seg_range(seg_range)
 		easiestfit = seg_range[0]
 		remainder = np.max(seg_range)
@@ -147,14 +147,14 @@ class Microstructures():
 		return([segment+remainder/len(seg_lengths) for segment in seg_lengths])
 	
 	def divide_microstructure_unit(self,point1,point2,dimensions):
-		'''
+		"""
 		
 		point1 - beginning of region to be resegmented
 		point2 - end of region to be resegmented
 		dimensions - lengths to cut region
 		returns - new segments that make up the microstructure being added to the region
 		
-		'''
+		"""
 		new_sections = []
 		if len(point1) < 4:
 			done = 0.0
@@ -192,7 +192,7 @@ class Microstructures():
 		return(np.arange(length*0.75,length*1.25,0.1))
 	
 	def myelinate_branch(self,branch,myelin_dimensions):
-		'''
+		"""
 		This function finds optimal microstructure dimensions to fit within a user specified branch, 
 		redistributes points through the branch corresponding to the breakpoitns of these section,
 		and returns the end points of each of these new structures.
@@ -201,7 +201,7 @@ class Microstructures():
 		myelin_dimensions - descriptions of node, paranode1,paranode2, and internode lengths (microns)
 		returns - branch where list members are end points of each new section
 		
-		'''
+		"""
 		
 		try:
 			segments = self.find_optimal_segmentation_length(self.branchLength(branch),seg_range=np.sum(myelin_dimensions))
@@ -228,12 +228,12 @@ class Microstructures():
 	
 	def myelinate_branches(self,arbor,arbor_labels,mbranches,myelin_geometry=[1,1,3,8,3,1]):
 		
-		'''
+		"""
 		mbranches - branch indices in arbor to be myelinated
 		myelin_dimensions - node length, paranode1 length, paranode2 length, internode (between paranodes) length
 		return(arbor,labels)
 		
-		'''
+		"""
 		
 		for branch in arbor.keys():
 			if branch in mbranches:
@@ -254,7 +254,7 @@ class Microstructures():
 			return([self.insert_midpoint(branch[i],branch[i+1]) for i in range(len(branch[:-1]))],[label for i in range(len(branch[:-1]))])
 	
 	def bouton_branch(self,branch,bouton_dimensions):
-		'''
+		"""
 		This function finds optimal microstructure dimensions to fit within a user specified branch, 
 		redistributes points through the branch corresponding to the breakpoitns of these section,
 		and returns the end points of each of these new structures.
@@ -263,7 +263,7 @@ class Microstructures():
 		bouton_dimensions - descriptions of interbouton and bouton lengths (microns)
 		returns - branch where list members are end points of each new section
 		
-		'''
+		"""
 		try:
 			segments = self.find_optimal_segmentation_length(self.branchLength(branch),seg_range=np.sum(bouton_dimensions))
 		except:
@@ -290,13 +290,13 @@ class Microstructures():
 	
 	
 	def bouton_branches(self,arbor,arbor_labels,bbranches,bouton_geometry=[28,4]):
-		'''
+		"""
 		
 		bbranches - branch indices in arbor to be myelinated
 		bouton_dimensions - (interbouton length upper and lower bounds), bouton length
 		return(arbor,labels)
 		
-		'''
+		"""
 		
 		for branch in arbor.keys():
 			if branch in bbranches:
@@ -371,7 +371,7 @@ class Microstructures():
 		return(newtree,newlabels)
 	
 	def add_microstructures_to_arbor(self,arbor,mbranches,bbranches):
-		'''
+		"""
 		
 		This function adds myelin and boutons to an axon arbor. 
 		
@@ -381,7 +381,7 @@ class Microstructures():
 		
 		returns: newly myelinated or boutoned arbor, and mirror dictionary with descriptive labels for all sections
 		
-		'''
+		"""
 		arbor_labels = dict(zip([key for key in arbor.keys()],[[] for key in arbor.keys()]))
 		arbor,arbor_labels = self.myelinate_branches(arbor,arbor_labels,mbranches)
 		arbor,arbor_labels = self.bouton_branches(arbor,arbor_labels,bbranches)

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>visualization.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>visualization.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">roots.swcToolkit</span> <span class="kn">import</span> <span class="n">swcToolkit</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <pre><code>mfile = 'fileonpath.swc'
+visualizer = swcVisualizer()
+visualizer.mplot_mfile(mfile)
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">swcVisualizer</span><span class="p">():</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">swcTool</span> <span class="o">=</span> <span class="n">swcToolkit</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">create_cylinders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">coords</span><span class="p">,</span><span class="n">diams</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="n">num_pts</span><span class="p">):</span>
+		<span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">z</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">connections</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">D</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">)):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Define points</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			<span class="n">C1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="n">kk</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+			<span class="n">C2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="n">kk</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>Define normal plane</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			<span class="n">p</span> <span class="o">=</span> <span class="n">C1</span><span class="o">-</span><span class="n">C2</span>
+			<span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">C1</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Get normal vectors on plane</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			<span class="n">z_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="n">p</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span>
+			<span class="n">nz_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="n">p</span><span class="o">!=</span><span class="mi">0</span><span class="p">]</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nz_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+				<span class="n">x1</span> <span class="o">=</span> <span class="mf">1.</span>
+				<span class="n">y1</span> <span class="o">=</span> <span class="mf">1.</span>
+				<span class="n">z1</span> <span class="o">=</span> <span class="p">(</span><span class="n">d</span><span class="o">-</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">],[</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">])))</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+				<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">z1</span><span class="p">])</span>
+			<span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">nz_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+				<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+				<span class="n">a</span><span class="p">[</span><span class="n">z_idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+				<span class="n">a</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.</span>
+				<span class="n">a</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">d</span><span class="o">-</span><span class="n">p</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>	
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+				<span class="n">a</span><span class="p">[</span><span class="n">z_idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+				<span class="n">a</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">]</span>
+			<span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">-</span><span class="n">C1</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">p</span><span class="o">!=</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+				<span class="n">x2</span> <span class="o">=</span> <span class="mf">1.</span>
+				<span class="n">y2</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+				<span class="n">z2</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">y2</span><span class="o">+</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+				<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x2</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">z2</span><span class="p">])</span>
+			<span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">p</span><span class="o">!=</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+				<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+				<span class="n">b</span><span class="p">[</span><span class="n">z_idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+				<span class="n">b</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">z_idx</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+				<span class="n">b</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="n">p</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+				<span class="n">b</span><span class="p">[</span><span class="n">nz_idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+				<span class="n">b</span><span class="p">[</span><span class="n">z_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.</span>
+				<span class="n">b</span><span class="p">[</span><span class="n">z_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="n">z_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">/</span><span class="n">a</span><span class="p">[</span><span class="n">z_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Convert to unit vectors</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			<span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+			<span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+			<span class="n">theta_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">2</span><span class="o">/</span><span class="n">num_pts</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Define set of points at a defined radius around
+the original points, C1 and C2</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			<span class="n">P1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_pts</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+			<span class="n">P2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_pts</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+			<span class="n">r1</span> <span class="o">=</span> <span class="n">diams</span><span class="p">[</span><span class="n">kk</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+			<span class="n">r2</span> <span class="o">=</span> <span class="n">diams</span><span class="p">[</span><span class="n">kk</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+			<span class="n">theta</span> <span class="o">=</span> <span class="mi">0</span>
+			<span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_pts</span><span class="p">):</span>
+				<span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+					<span class="n">P1</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">C1</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">+</span> <span class="n">r1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">+</span> <span class="n">r1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span>
+					<span class="n">P2</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">C2</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">+</span> <span class="n">r2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">+</span> <span class="n">r2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span>
+				
+				<span class="n">theta</span> <span class="o">+=</span> <span class="n">theta_step</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>Define triangles</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			<span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">num_pts</span><span class="p">):</span>
+				<span class="k">if</span> <span class="n">ii</span> <span class="o">&lt;</span> <span class="n">num_pts</span><span class="p">:</span>
+					<span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ii</span><span class="o">+</span><span class="n">offset</span><span class="p">,(</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="n">num_pts</span><span class="o">+</span><span class="n">offset</span><span class="p">,</span><span class="n">ii</span><span class="o">+</span><span class="n">num_pts</span><span class="o">+</span><span class="n">offset</span><span class="p">))</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ii</span><span class="o">+</span><span class="n">offset</span><span class="p">,(</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">num_pts</span><span class="p">)</span><span class="o">%</span><span class="n">num_pts</span><span class="o">+</span><span class="n">offset</span><span class="o">+</span><span class="n">num_pts</span><span class="p">,(</span><span class="n">ii</span><span class="o">-</span><span class="n">num_pts</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="n">num_pts</span><span class="o">+</span><span class="n">offset</span><span class="p">))</span>
+			
+			<span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_pts</span><span class="p">):</span>
+				<span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P1</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+				<span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P1</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+				<span class="n">z</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P1</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+				<span class="n">D</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">kk</span><span class="p">])</span>
+			
+			<span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_pts</span><span class="p">):</span>
+				<span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P2</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+				<span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P2</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+				<span class="n">z</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P2</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+				<span class="n">D</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">kk</span><span class="p">])</span>
+			
+			<span class="n">offset</span> <span class="o">+=</span> <span class="mi">2</span><span class="o">*</span><span class="n">num_pts</span>
+		
+		<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+		<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+		<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+		<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+		
+		<span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">connections</span><span class="p">,</span> <span class="n">D</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">segment_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">branch</span><span class="p">):</span>
+		<span class="n">segments</span> <span class="o">=</span><span class="p">[]</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">seg_end</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">branch</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+			<span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">branch</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">branch</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]])</span>
+		<span class="k">return</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">unzip_sectioned_arbor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span>
+		<span class="n">x</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">y</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">z</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="n">x</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="n">y</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="n">z</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="n">r</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]:</span>
+				<span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">section</span><span class="p">:</span>
+					<span class="n">x</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+					<span class="n">y</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+					<span class="n">z</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+					<span class="n">r</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">r</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">rgb_to_mlabcolor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rgb</span><span class="p">):</span>
+		<span class="k">return</span><span class="p">((</span><span class="n">rgb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">255.0</span><span class="p">,</span><span class="n">rgb</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">255.0</span><span class="p">,</span><span class="n">rgb</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="mf">255.0</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">mplot_sectioned_arbor_simplified</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">,</span><span class="n">arbor_labels</span><span class="p">):</span>
+		<span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">42</span><span class="o">/</span><span class="mf">255.0</span><span class="p">,</span><span class="mi">56</span><span class="o">/</span><span class="mf">255.0</span><span class="p">,</span><span class="mi">54</span><span class="o">/</span><span class="mf">255.0</span><span class="p">),</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1280</span><span class="p">,</span><span class="mi">720</span><span class="p">))</span>
+		<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;node&#39;</span><span class="p">,</span><span class="s1">&#39;paranode1&#39;</span><span class="p">,</span><span class="s1">&#39;paranode2&#39;</span><span class="p">,</span><span class="s1">&#39;internode&#39;</span><span class="p">,</span><span class="s1">&#39;interbouton&#39;</span><span class="p">,</span><span class="s1">&#39;bouton&#39;</span><span class="p">]</span>
+		<span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rgb_to_mlabcolor</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">84</span><span class="p">),(</span><span class="mi">112</span><span class="p">,</span> <span class="mi">193</span><span class="p">,</span> <span class="mi">179</span><span class="p">),(</span><span class="mi">178</span><span class="p">,</span> <span class="mi">219</span><span class="p">,</span> <span class="mi">191</span><span class="p">),(</span><span class="mi">36</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="mi">160</span><span class="p">),((</span><span class="mi">243</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">189</span><span class="p">)),(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]]</span>
+		<span class="n">color_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span><span class="n">values</span><span class="p">))</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">if</span> <span class="n">branch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+				<span class="k">continue</span>
+			
+			<span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">section</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]):</span>
+				<span class="n">mlab</span><span class="o">.</span><span class="n">plot3d</span><span class="p">([</span><span class="n">sec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section</span><span class="p">],[</span><span class="n">sec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section</span><span class="p">],[</span><span class="n">sec</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="n">color_dict</span><span class="p">[</span><span class="n">arbor_labels</span><span class="p">[</span><span class="n">branch</span><span class="p">][</span><span class="n">s</span><span class="p">]],</span><span class="n">tube_radius</span><span class="o">=</span><span class="n">section</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">tube_sides</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+		
+		<span class="n">mlab</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">azimuth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">elevation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+		
+		<span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">plot_electrode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">,</span><span class="n">arbor_labels</span><span class="p">,</span><span class="n">view</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+		<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;contact&#39;</span><span class="p">,</span><span class="s1">&#39;noncontact&#39;</span><span class="p">,</span><span class="s1">&#39;activecontact&#39;</span><span class="p">]</span>
+		<span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rgb_to_mlabcolor</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">94</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),(</span><span class="mi">173</span><span class="p">,</span><span class="mi">42</span><span class="p">,</span><span class="mi">42</span><span class="p">)]]</span>
+		<span class="n">color_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span><span class="n">values</span><span class="p">))</span>
+		<span class="n">electrode_parts</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">electrode_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mlab</span><span class="o">.</span><span class="n">points3d</span><span class="p">([</span><span class="n">arbor</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]],[</span><span class="n">arbor</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]],[</span><span class="n">arbor</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]],</span><span class="n">color</span><span class="o">=</span><span class="n">color_dict</span><span class="p">[</span><span class="s1">&#39;noncontact&#39;</span><span class="p">],</span><span class="n">scale_factor</span><span class="o">=</span><span class="n">arbor</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;sphere&#39;</span><span class="p">,</span><span class="n">resolution</span><span class="o">=</span><span class="mi">16</span><span class="p">))</span>
+		<span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">section</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">arbor</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+			<span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">arbor_labels</span><span class="p">:</span>
+				<span class="n">col</span> <span class="o">=</span> <span class="n">color_dict</span><span class="p">[</span><span class="s1">&#39;contact&#39;</span><span class="p">]</span>
+				<span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+					<span class="n">col</span> <span class="o">=</span> <span class="n">color_dict</span><span class="p">[</span><span class="s1">&#39;activecontact&#39;</span><span class="p">]</span>
+			
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">col</span> <span class="o">=</span> <span class="n">color_dict</span><span class="p">[</span><span class="s1">&#39;noncontact&#39;</span><span class="p">]</span>
+			
+			<span class="n">electrode_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mlab</span><span class="o">.</span><span class="n">plot3d</span><span class="p">([</span><span class="n">sec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section</span><span class="p">],[</span><span class="n">sec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section</span><span class="p">],[</span><span class="n">sec</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span><span class="n">tube_radius</span><span class="o">=</span><span class="n">section</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">tube_sides</span><span class="o">=</span><span class="mi">16</span><span class="p">))</span>
+		
+		<span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">electrode_parts</span><span class="p">:</span>
+			<span class="n">part</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">backface_culling</span><span class="o">=</span><span class="bp">True</span>
+			<span class="n">part</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">frontface_culling</span><span class="o">=</span><span class="bp">True</span>
+			<span class="n">part</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">shading</span><span class="o">=</span><span class="bp">True</span>
+		<span class="k">if</span> <span class="n">view</span><span class="p">:</span>
+			<span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">mplot_sectioned_arbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbors</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">0.29</span><span class="p">,</span> <span class="mf">0.58</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">),(</span><span class="mf">0.82</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.24</span><span class="p">)],</span><span class="n">view</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+		<span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">42</span><span class="o">/</span><span class="mf">255.0</span><span class="p">,</span><span class="mi">56</span><span class="o">/</span><span class="mf">255.0</span><span class="p">,</span><span class="mi">54</span><span class="o">/</span><span class="mf">255.0</span><span class="p">),</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1280</span><span class="p">,</span><span class="mi">720</span><span class="p">))</span>
+		<span class="k">for</span> <span class="n">arbor</span> <span class="ow">in</span> <span class="n">arbors</span><span class="p">:</span>
+			<span class="n">myav_coords</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="n">myav_diams</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unzip_sectioned_arbor</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+			<span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="n">diams</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">for</span> <span class="n">bnum</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+				<span class="n">tcoords</span> <span class="o">=</span> <span class="p">[]</span>
+				<span class="n">tdiams</span> <span class="o">=</span> <span class="p">[]</span>
+				<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">tem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">bnum</span><span class="p">]):</span>
+					<span class="n">tcoords</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">z</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">]])</span>
+					<span class="n">tdiams</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+					<span class="n">tdiams</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">3.0</span>
+				
+				<span class="n">coords</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_branch</span><span class="p">(</span><span class="n">tcoords</span><span class="p">))</span>
+				<span class="n">diams</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_branch</span><span class="p">(</span><span class="n">tdiams</span><span class="p">))</span>
+			
+			
+			<span class="n">myav_coords</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+			<span class="n">myav_diams</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diams</span><span class="p">)</span>
+			<span class="n">myav_vs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">myav_coords</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))]</span><span class="o">+</span><span class="p">[</span><span class="mi">2</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))]</span>
+			<span class="n">num_pts</span> <span class="o">=</span> <span class="mi">20</span>
+			<span class="n">tx</span><span class="p">,</span><span class="n">ty</span><span class="p">,</span><span class="n">tz</span><span class="p">,</span><span class="n">tconn</span><span class="p">,</span><span class="n">tD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_cylinders</span><span class="p">(</span><span class="n">myav_coords</span><span class="p">,</span><span class="n">myav_diams</span><span class="p">,</span><span class="n">myav_vs</span><span class="p">,</span><span class="n">num_pts</span><span class="p">)</span>
+			<span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span><span class="n">ty</span><span class="p">,</span><span class="n">tz</span><span class="p">,</span><span class="n">tconn</span><span class="p">,</span><span class="n">scalars</span><span class="o">=</span><span class="n">tD</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+		
+		<span class="n">mlab</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">azimuth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">elevation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>for ii in range(D.shape[1]):
+    <em>=mlab.triangular_mesh(x,y,z,connection,scalars = D[:,ii],vmin=Min,vmax=Max)
+    </em>=mlab.view(azimuth=0,elevation=0)
+    _=mlab.savefig(&lsquo;pic%.4d.png&rsquo; % ii, size=(800,600))
+mlab.savefig(&lsquo;pic%.4d.png&rsquo; % tstep,size=(1200,900))</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		
+		<span class="k">if</span> <span class="n">view</span><span class="p">:</span>
+			<span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">mlab</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="nb">all</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">mplot_sectioned_arbor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">0.29</span><span class="p">,</span> <span class="mf">0.58</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">),(</span><span class="mf">0.82</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.24</span><span class="p">)],</span><span class="n">show</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+		<span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">42</span><span class="o">/</span><span class="mf">255.0</span><span class="p">,</span><span class="mi">56</span><span class="o">/</span><span class="mf">255.0</span><span class="p">,</span><span class="mi">54</span><span class="o">/</span><span class="mf">255.0</span><span class="p">),</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1280</span><span class="p">,</span><span class="mi">720</span><span class="p">))</span>
+		<span class="n">colorind</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="n">myav_coords</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">myav_diams</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unzip_sectioned_arbor</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">diams</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">bnum</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+			<span class="n">tcoords</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="n">tdiams</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">tem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">bnum</span><span class="p">]):</span>
+				<span class="n">tcoords</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">z</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">]])</span>
+				<span class="n">tdiams</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <pre><code>    tdiams[-1] = 0.025
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			
+			<span class="n">coords</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_branch</span><span class="p">(</span><span class="n">tcoords</span><span class="p">))</span>
+			<span class="n">diams</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_branch</span><span class="p">(</span><span class="n">tdiams</span><span class="p">))</span>
+		
+		
+		<span class="n">myav_coords</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+		<span class="n">myav_diams</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diams</span><span class="p">)</span>
+		<span class="n">myav_vs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">myav_coords</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))]</span><span class="o">+</span><span class="p">[</span><span class="mi">2</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))]</span>
+		<span class="n">num_pts</span> <span class="o">=</span> <span class="mi">20</span>
+		<span class="n">tx</span><span class="p">,</span><span class="n">ty</span><span class="p">,</span><span class="n">tz</span><span class="p">,</span><span class="n">tconn</span><span class="p">,</span><span class="n">tD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_cylinders</span><span class="p">(</span><span class="n">myav_coords</span><span class="p">,</span><span class="n">myav_diams</span><span class="p">,</span><span class="n">myav_vs</span><span class="p">,</span><span class="n">num_pts</span><span class="p">)</span>
+		<span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span><span class="n">ty</span><span class="p">,</span><span class="n">tz</span><span class="p">,</span><span class="n">tconn</span><span class="p">,</span><span class="n">scalars</span><span class="o">=</span><span class="n">tD</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+		<span class="n">colorind</span><span class="o">+=</span><span class="mi">1</span>
+		<span class="n">mlab</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">azimuth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">elevation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <p>for ii in range(D.shape[1]):
+    <em>=mlab.triangular_mesh(x,y,z,connection,scalars = D[:,ii],vmin=Min,vmax=Max)
+    </em>=mlab.view(azimuth=0,elevation=0)
+    _=mlab.savefig(&lsquo;pic%.4d.png&rsquo; % ii, size=(800,600))
+mlab.savefig(&lsquo;pic%.4d.png&rsquo; % tstep,size=(1200,900))</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		<span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+			<span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">mplot_mfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">swcfile</span><span class="p">,</span><span class="n">colors</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">0.29</span><span class="p">,</span> <span class="mf">0.58</span><span class="p">,</span> <span class="mf">0.67</span><span class="p">),(</span><span class="mf">0.82</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.24</span><span class="p">)]):</span>
+		<span class="n">colorind</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="n">myav_coords</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">myav_diams</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">swcTool</span><span class="o">.</span><span class="n">load_swc</span><span class="p">(</span><span class="n">swcfile</span><span class="p">,</span><span class="n">asTree</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+		<span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">diams</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">bnum</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+			<span class="n">tcoords</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="n">tdiams</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">tem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">bnum</span><span class="p">]):</span>
+				<span class="n">tcoords</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">z</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">]])</span>
+				<span class="n">tdiams</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">bnum</span><span class="p">][</span><span class="n">i</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <pre><code>    tdiams[-1] = 0.025
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			
+			<span class="n">coords</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_branch</span><span class="p">(</span><span class="n">tcoords</span><span class="p">))</span>
+			<span class="n">diams</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_branch</span><span class="p">(</span><span class="n">tdiams</span><span class="p">))</span>
+		
+		
+		<span class="n">myav_coords</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+		<span class="n">myav_diams</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diams</span><span class="p">)</span>
+		<span class="n">myav_vs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">myav_coords</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))]</span><span class="o">+</span><span class="p">[</span><span class="mi">2</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))]</span>
+		<span class="n">num_pts</span> <span class="o">=</span> <span class="mi">6</span>
+		<span class="n">tx</span><span class="p">,</span><span class="n">ty</span><span class="p">,</span><span class="n">tz</span><span class="p">,</span><span class="n">tconn</span><span class="p">,</span><span class="n">tD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_cylinders</span><span class="p">(</span><span class="n">myav_coords</span><span class="p">,</span><span class="n">myav_diams</span><span class="p">,</span><span class="n">myav_vs</span><span class="p">,</span><span class="n">num_pts</span><span class="p">)</span>
+		<span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span><span class="n">ty</span><span class="p">,</span><span class="n">tz</span><span class="p">,</span><span class="n">tconn</span><span class="p">,</span><span class="n">scalars</span><span class="o">=</span><span class="n">tD</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">colorind</span><span class="p">])</span>
+		<span class="n">colorind</span><span class="o">+=</span><span class="mi">1</span>
+		<span class="n">mlab</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">azimuth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">elevation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <p>for ii in range(D.shape[1]):
+    <em>=mlab.triangular_mesh(x,y,z,connection,scalars = D[:,ii],vmin=Min,vmax=Max)
+    </em>=mlab.view(azimuth=0,elevation=0)
+    _=mlab.savefig(&lsquo;pic%.4d.png&rsquo; % ii, size=(800,600))
+mlab.savefig(&lsquo;pic%.4d.png&rsquo; % tstep,size=(1200,900))</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		<span class="n">mlab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

@@ -149,8 +149,8 @@ class Roots_math():
 	def angle_tree(self, allpoints, point, prevpoint):
 		return([np.pi - self.check_angle(point, thisp, prevpoint) for thisp in allpoints])
 
-	''' chooses closest point from a set of given points and returns the index of that point in the array and the actual point itself '''
 	def choose_nearest(self, point, allpoints):
+		""" chooses closest point from a set of given points and returns the index of that point in the array and the actual point itself """
 		dists = dict(zip(self.euc_tree(allpoints,point),allpoints))
 		if len(dists.keys()) > 1:
 			nearest = dists[min(dists.keys())]
@@ -165,9 +165,10 @@ class Roots_math():
 		nearest = dists[min(dists.keys())]
 		nearestindex = allpoints.index(nearest)
 		return(nearest, nearestindex)
-
-	''' Finds branch_counter from last key and index of point on arbor and returns that key and index '''
+	
 	def find_point_on_arbor(self, arbor, point, branch_counter):
+		""" Finds branch_counter from last key and index of point on arbor and returns that key and index """
+		
 		counter = branch_counter
 		for key in reversed(arbor.keys()):
 			for index, this_point in enumerate(arbor[key]):
@@ -176,8 +177,9 @@ class Roots_math():
 						return(key, index)
 					counter = counter - 1
 		
-	''' Returns a point a little over the specified path length away from the branch end '''
+	
 	def lookup_nearest_likely_path(self,point_of_int):
+		""" Returns a point a little over the specified path length away from the branch end """
 		cluster_distances = self.euc_tree(self.kmdd.vertices,point_of_int)
 		sorted_distances = list(sorted(cluster_distances))
 		for increasing_distance in sorted_distances:
@@ -223,8 +225,8 @@ class Roots_math():
 			return(arbor[0][0])
 
 	
-	''' Checks whether the branch can be extended; returns true or false and the point that it should be extended with '''
 	def branch_extension_check(self, firstextend, arborpoint, prevpoint, openpoints, distthresh, angthresh, rel_source_dist, arbor):
+		""" Checks whether the branch can be extended; returns true or false and the point that it should be extended with """
 		rel_source = self.find_relative_source(arbor, arborpoint, rel_source_dist)
 		refdist = self.eucdist3d(arborpoint, rel_source) #distance from arbor point to source	
 		alldists = self.euc_tree(openpoints, rel_source) #array of distances from source to each open point
@@ -312,7 +314,7 @@ class Roots_math():
 
 class Roots():
 	
-	'''
+	"""
 	source - point from which the tree begins (not a member of open 'points' which is a separate argument)
 	points - open points through which the tree must grow (does not include 'source')
 	s_ang - branch extension angle threshold
@@ -326,7 +328,7 @@ class Roots():
 				tri_edge_length_max - the meshing distance threshold below which delaunay triangulated edges will be returned (i.e. triangulated edges longer than tri_edge_length_max will be removed from the triangulation)
 				openpoints - open points to be clustered and meshed (same as ROOTS argument 'points')
 				source - source point from which a tree will be grown (same as ROOTS argument 'source')
-	'''
+	"""
 	def __init__(self, source, points,total_length, s_ang, s_dist, b_ang, b_dist, bnum_limit=np.inf,rel_source_dist=100,KMDDproperties={}):
 		self.KMDDproperties = KMDDproperties
 		self.source = source

@@ -8,7 +8,7 @@ import sys
 from scipy.spatial.distance import cdist
 
 class swcToolkit():
-	'''
+	"""
 	
 	```
 	from roots.swcToolkit import swcToolkit
@@ -19,12 +19,12 @@ class swcToolkit():
 	swctool.to_swc(morph3,'morph3.swc')
 	```
 	
-	'''
+	"""
 	def __init__(self):
 		pass
 	
 	def shift_point(self,a,vec):
-		'''
+		"""
 		
 		Shift a point around an origin according to user specified vector
 		
@@ -33,12 +33,12 @@ class swcToolkit():
 		
 		returns the shifted point
 		
-		'''
+		"""
 		
 		return([a[0]-vec[0],a[1]-vec[1],a[2]-vec[2]])
 	
 	def move_morphology(self,arbor,vector): #unit - microns
-		'''
+		"""
 		
 		Shift a morphology around an origin according to user specified vector
 		
@@ -47,7 +47,7 @@ class swcToolkit():
 		
 		returns the shifted morphology
 		
-		'''
+		"""
 		if any(isinstance(i, list) for i in arbor[0]):
 			for branch in arbor.keys():
 				for section in arbor[branch]:
@@ -60,13 +60,13 @@ class swcToolkit():
 		return(arbor)
 	
 	def rotate_point(self,origin, point, el=0.0,az=0.0):
-		'''
+		"""
 		
 		Rotate a point counterclockwise by a given angle around a given origin.
 		The angle should be given in radians.
 		
 		
-		'''
+		"""
 		ox, oy, oz = origin
 		px, py, pz = point[:3]
 		radius = point[-1]
@@ -84,7 +84,7 @@ class swcToolkit():
 		return([qx,qy,qz,radius])
 	
 	def rotate_morphology(self,arbor,origin,elevation=0.0,azimuth=0.0): 
-		'''
+		"""
 		
 		Rotate a morphology around an origin according to user specified elevation and azimuth
 		
@@ -95,7 +95,7 @@ class swcToolkit():
 		
 		returns the rotated morphology
 		
-		'''
+		"""
 		newarbor = {}
 		elevation = elevation*np.pi/180.0
 		azimuth = azimuth*np.pi/180.0
@@ -294,7 +294,7 @@ class swcToolkit():
 	
 	def to_swc(self,arbor=[],target='swcTest.swc'):
 		
-		'''
+		"""
 		n T x y z R P
 		
 		n is an integer label that identifies the current point and increments by one from one line to the next.
@@ -314,7 +314,7 @@ class swcToolkit():
 		
 		R is the radius at that node.
 		P indicates the parent (the integer label) of the current point or -1 to indicate an origin (soma). 
-		'''
+		"""
 		
 		try:
 			with open(target,'wb') as f:

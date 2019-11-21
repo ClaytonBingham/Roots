@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>graphmethods.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>graphmethods.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+	<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+	<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">except</span><span class="p">:</span>
+	<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;This class depends upon networkx, numpy. If you are unable to import this package, install it and try again.&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">GraphMethods</span><span class="p">():</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">faces</span><span class="p">,</span><span class="n">vertices</span><span class="p">,</span><span class="n">source_point</span><span class="p">,</span><span class="n">source_index</span><span class="p">,</span><span class="n">tri_edge_length_max</span><span class="o">=</span><span class="mi">175</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_graph</span><span class="p">(</span><span class="n">source_point</span><span class="p">,</span><span class="n">faces</span><span class="p">,</span><span class="n">vertices</span><span class="p">,</span><span class="n">tri_edge_length_max</span><span class="p">)</span>
+		<span class="n">source_index</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">vertices</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">source_point</span><span class="p">))</span>
+		<span class="n">combos</span> <span class="o">=</span> <span class="p">[[</span><span class="n">source_index</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">source_index</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">node_dict</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_most_likely_paths</span><span class="p">(</span><span class="n">source_index</span><span class="p">,</span><span class="n">combos</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">euc_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">):</span>
+		<span class="k">return</span><span class="p">(((</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">euc_dist_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">):</span>
+		<span class="k">return</span><span class="p">(((</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">distance_filter_pass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">threshold_dist</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">euc_dist</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold_dist</span><span class="p">:</span>
+			<span class="k">return</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">build_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">source_point</span><span class="p">,</span><span class="n">faces</span><span class="p">,</span><span class="n">vertices</span><span class="p">,</span><span class="n">tri_edge_length_max</span><span class="p">):</span>
+		<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+		<span class="k">for</span> <span class="n">pyramid</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
+			<span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]]:</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_filter_pass</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]],</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]],</span><span class="n">tri_edge_length_max</span><span class="p">):</span>
+						<span class="k">try</span><span class="p">:</span>
+							<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span><span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">euc_dist</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]],</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]]))</span>
+						<span class="k">except</span><span class="p">:</span>
+							<span class="k">print</span><span class="p">(</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span><span class="s1">&#39;coundt find it in vertices&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <h2>needs to be commented eventually because this is cheating to help arbitrary source points that may not be close to point cloud</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>					<span class="k">elif</span> <span class="nb">list</span><span class="p">(</span><span class="n">source_point</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]),</span><span class="nb">list</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])]:</span>
+						<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_filter_pass</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]],</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]],</span><span class="n">tri_edge_length_max</span><span class="o">+</span><span class="mi">100</span><span class="p">):</span>
+							<span class="k">try</span><span class="p">:</span>
+								<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span><span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">euc_dist</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]],</span><span class="n">vertices</span><span class="p">[</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]]))</span>
+							<span class="k">except</span><span class="p">:</span>
+								<span class="k">print</span><span class="p">(</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">pyramid</span><span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span><span class="s1">&#39;coundt find it in vertices&#39;</span><span class="p">)</span>
+				<span class="k">except</span><span class="p">:</span>
+					<span class="k">print</span><span class="p">(</span><span class="n">pyramid</span><span class="p">,</span><span class="nb">list</span><span class="p">(</span><span class="n">faces</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pyramid</span><span class="p">),</span><span class="s1">&#39;couldnt find it in vertices&#39;</span><span class="p">)</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">G</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">list_sort_by_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">LOLs</span><span class="p">):</span>
+		<span class="k">return</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">LOLs</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">less_than_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">incomplete_paths</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+		<span class="k">return</span><span class="p">(</span><span class="n">p</span><span class="o">-</span><span class="nb">len</span><span class="p">([</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">incomplete_paths</span> <span class="k">if</span> <span class="n">l</span><span class="o">&lt;</span><span class="n">p</span><span class="p">]))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">find_longest_inclusive_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">paths</span><span class="p">):</span>
+		<span class="n">paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_sort_by_size</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
+		<span class="n">node_dict</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="k">for</span> <span class="n">p</span><span class="p">,</span><span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">paths</span><span class="p">):</span>
+			<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+					<span class="n">node_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+		
+		<span class="n">complete_paths</span> <span class="o">=</span> <span class="n">node_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+		<span class="n">incomplete_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span><span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">complete_paths</span><span class="p">]</span>
+		<span class="k">return</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">node_dict</span><span class="o">.</span><span class="n">values</span><span class="p">(),[</span><span class="bp">self</span><span class="o">.</span><span class="n">less_than_count</span><span class="p">(</span><span class="n">incomplete_paths</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">complete_paths</span><span class="p">])),[</span><span class="n">path</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span><span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">complete_paths</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">find_most_likely_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">source_index</span><span class="p">,</span><span class="n">combos</span><span class="p">):</span>
+		<span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">c</span><span class="p">,</span><span class="n">combo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">combos</span><span class="p">):</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">dijkstra_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span><span class="n">source_index</span><span class="p">,</span><span class="n">combo</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="k">pass</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">find_longest_inclusive_paths</span><span class="p">(</span><span class="n">paths</span><span class="p">))</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

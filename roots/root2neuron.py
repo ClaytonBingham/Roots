@@ -1,7 +1,7 @@
 import os
 
 class Root2Hoc():
-	'''
+	"""
 	This class is designed to take an existing morphology and write the topology and morphology to a .hoc file that can be used to run NEURON simulations using existing models.
 	
 	```
@@ -12,7 +12,7 @@ class Root2Hoc():
 	hoc_writer.arbor_to_nrn(arbor)
 	```
 	
-	'''
+	"""
 	
 	def __init__(self):
 		pass
@@ -54,11 +54,11 @@ class Root2Hoc():
 		return(sec_count)
 	
 	def build_section_indices(self,arbor):
-		'''
+		"""
 		
 		builds a dictionary of indices that match the arbor sections and is used to label sections while building the connections/topology
 		
-		'''
+		"""
 		
 		section_indices = {}
 		sec_ind = 0
@@ -109,7 +109,7 @@ class Root2Hoc():
 		return(nrn_command+'}\n')
 	
 	def arbor_to_nrn_morphology(self,arbor):
-		'''
+		"""
 		//Set up axon geometry
 		
 		
@@ -118,7 +118,7 @@ class Root2Hoc():
 		    pt3dadd(-10338,2909.5,-316.24,nodeD)
 		    pt3dadd(-10338.3947,2910.3684,-315.94,nodeD)
 		}
-		'''
+		"""
 		morpho_func='\n//Set up axon geometry\n\n//MAIN AXON\n\n'
 		section_index = 0
 		for branch in arbor.keys():
@@ -196,7 +196,7 @@ class Root2Hoc():
 
 
 class Root2Py():
-	'''
+	"""
 	This class is designed to take an existing morphology and write the topology and morphology to a .py file that can be used to run NEURON simulations using existing models.
 	
 	```
@@ -207,7 +207,7 @@ class Root2Py():
 	nrn.arbor_to_py(arbor)
 	```
 	
-	'''
+	"""
 	
 	def __init__(self):
 		pass
@@ -249,11 +249,11 @@ class Root2Py():
 		return(sec_count)
 	
 	def build_section_indices(self,arbor):
-		'''
+		"""
 		
 		builds a dictionary of indices that match the arbor sections and is used to label sections while building the connections/topology
 		
-		'''
+		"""
 		
 		section_indices = {}
 		sec_ind = 0
@@ -304,7 +304,7 @@ class Root2Py():
 		return(nrn_command+'}\n')
 	
 	def arbor_to_nrn_morphology(self,arbor):
-		'''
+		"""
 		#Set up axon geometry
 		
 		
@@ -313,7 +313,7 @@ class Root2Py():
 		h.pt3dadd(-10338,2909.5,-316.24,nodeD,sec=node[0])
 		h.pt3dadd(-10338.3947,2910.3684,-315.94,nodeD,sec=node[0])
 		
-		'''
+		"""
 		nrn_morpho_func='\n#Set up axon geometry\n\n#MAIN AXON\n\n'
 		section_index = 0
 		for branch in arbor.keys():

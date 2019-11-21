@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>root2neuron.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>root2neuron.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <pre><code>This class is designed to take an existing morphology and write the topology and morphology to a .hoc file that can be used to run NEURON simulations using existing models.
+
+```
+hoc_writer = Root2Hoc()
+hoc_writer.primarytest()
+arbor = hoc_writer.test_arbor()
+print(arbor)
+hoc_writer.arbor_to_nrn(arbor)
+```
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Root2Hoc</span><span class="p">():</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">pass</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">strip_diameters_for_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">li</span><span class="p">):</span>
+		<span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">li</span><span class="p">):</span>
+			<span class="n">newli</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">li</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+				<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">li</span><span class="p">:</span>
+					<span class="n">newli</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">point</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">section</span><span class="p">])</span>
+				<span class="k">return</span><span class="p">(</span><span class="n">newli</span><span class="p">)</span>
+			
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span><span class="p">([</span><span class="n">point</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">li</span><span class="p">])</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span><span class="p">(</span><span class="n">li</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">lookup_section_by_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">,</span><span class="n">point</span><span class="p">,</span><span class="n">home_branch</span><span class="p">):</span>
+		<span class="n">sec_index</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">if</span> <span class="n">branch</span> <span class="o">==</span> <span class="n">home_branch</span><span class="p">:</span>
+				<span class="k">continue</span>
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]:</span>
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_diameters_for_comparison</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_diameters_for_comparison</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+					<span class="k">return</span><span class="p">(</span><span class="n">sec_index</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">strip_diameters_for_comparison</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strip_diameters_for_comparison</span><span class="p">(</span><span class="n">point</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+				
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">sec_index</span><span class="o">+=</span><span class="mi">1</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">count_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span>
+		<span class="n">sec_count</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]:</span>
+				<span class="n">sec_count</span><span class="o">+=</span><span class="mi">1</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">sec_count</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <pre><code>    builds a dictionary of indices that match the arbor sections and is used to label sections while building the connections/topology
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">build_section_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		
+		<span class="n">section_indices</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">sec_ind</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]:</span>
+				<span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_ind</span><span class="p">)</span>
+				<span class="n">sec_ind</span><span class="o">+=</span><span class="mi">1</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">section_indices</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">build_topology_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span>
+		<span class="n">section_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_section_indices</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="n">connections</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">if</span> <span class="n">branch</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+				<span class="n">ind</span><span class="p">,</span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_section_by_point</span><span class="p">(</span><span class="n">arbor</span><span class="p">,</span><span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">branch</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">ind</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+					<span class="k">raise</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span>
+				
+				<span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(([</span><span class="n">ind</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">position</span><span class="p">)],[</span><span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">]))</span>
+			
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+				<span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(([</span><span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">][</span><span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">section</span><span class="p">)],</span><span class="mi">1</span><span class="p">],[</span><span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">][</span><span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">section</span><span class="p">)]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">connections</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">arbor_to_nrn_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span>
+		<span class="n">topo_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_topology_list</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="n">number_of_sections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_sections</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="n">topo_func</span> <span class="o">=</span> <span class="s1">&#39;//Building axon topology</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+		<span class="n">topo_func</span><span class="o">+=</span> <span class="n">f</span><span class="s1">&#39;create sectionList[{number_of_sections}]&#39;</span>
+		
+		<span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">topo_list</span><span class="p">:</span>
+			<span class="n">topo_func</span><span class="o">+=</span><span class="n">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">connect sectionList[{connection[0][0]}]({connection[0][1]}), sectionList[{connection[1][0]}]({connection[1][1]})&#39;</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">topo_func</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">nrn_build_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">section_index</span><span class="p">,</span><span class="n">section_points</span><span class="p">):</span>
+		<span class="n">nrn_command</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;sectionList[{section_index}]&#39;</span><span class="o">+</span><span class="s1">&#39;{</span><span class="se">\n</span><span class="s1">&#39;</span>
+		<span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">section_points</span><span class="p">:</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+				<span class="n">nrn_command</span><span class="o">+=</span><span class="n">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">pt3dadd({point[0]},{point[1]},{point[2]},1)</span><span class="se">\n</span><span class="s1">&#39;</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">nrn_command</span><span class="o">+=</span><span class="n">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">pt3dadd({point[0]},{point[1]},{point[2]},{point[3]})</span><span class="se">\n</span><span class="s1">&#39;</span>
+		
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">nrn_command</span><span class="o">+</span><span class="s1">&#39;}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <pre><code>    //Set up axon geometry
+
+
+    //MAIN AXON
+    node[0]{
+        pt3dadd(-10338,2909.5,-316.24,nodeD)
+        pt3dadd(-10338.3947,2910.3684,-315.94,nodeD)
+    }
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">arbor_to_nrn_morphology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		<span class="n">morpho_func</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">//Set up axon geometry</span><span class="se">\n\n</span><span class="s1">//MAIN AXON</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+		<span class="n">section_index</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]:</span>
+				<span class="n">morpho_func</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">nrn_build_section</span><span class="p">(</span><span class="n">section_index</span><span class="p">,</span><span class="n">section</span><span class="p">)</span>
+				<span class="n">section_index</span><span class="o">+=</span><span class="mi">1</span>
+		
+		
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">morpho_func</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">arbor_to_nrn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">,</span><span class="n">labels</span><span class="p">,</span><span class="n">target</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;/testmorphology.hoc&#39;</span><span class="p">):</span>
+		<span class="n">topology_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn_topology</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="n">morphology_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn_morphology</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">target</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+			<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">topology_function</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">morphology_function</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">topology_function</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">morphology_function</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">test_arbor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">arbor</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">arbor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]],[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]],[[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]]</span>
+		<span class="n">arbor</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]],[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]]</span>
+		<span class="n">arbor</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]],[[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">]]]</span>
+		
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">primarytest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">arbor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_arbor</span><span class="p">()</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_section_by_point</span><span class="p">(</span><span class="n">arbor</span><span class="p">,[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;lookup_section_by_point() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;lookup_section_by_point() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_sections</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;count_sections() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;count_sections() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_topology_list</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span> <span class="p">[([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">])]:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;build_section_list() --passed</span><span class="se">\n</span><span class="s1">build_section_indices() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;build_section_list() --failed</span><span class="se">\n</span><span class="s1">build_section_indices() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn_topology</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;//Building axon topology</span><span class="se">\n\n</span><span class="s1">create sectionList[7]</span><span class="se">\n</span><span class="s1">connect sectionList[0](1), sectionList[1](0)</span><span class="se">\n</span><span class="s1">connect sectionList[1](1), sectionList[2](0)</span><span class="se">\n</span><span class="s1">connect sectionList[0](1), sectionList[3](0)</span><span class="se">\n</span><span class="s1">connect sectionList[3](1), sectionList[4](0)</span><span class="se">\n</span><span class="s1">connect sectionList[1](1), sectionList[5](0)</span><span class="se">\n</span><span class="s1">connect sectionList[5](1), sectionList[6](0)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn_topology() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn_topology() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrn_build_section</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">arbor</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span><span class="s1">&#39;sectionList[0]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(0,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(1,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;nrn_build_section() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;nrn_build_section() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn_morphology</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">//Set up axon geometry</span><span class="se">\n\n</span><span class="s1">//MAIN AXON</span><span class="se">\n\n</span><span class="s1">sectionList[0]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(0,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(1,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[1]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(3,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[2]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(5,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(6,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[3]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,1,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,2,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[4]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,2,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,3,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,4,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[5]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,1,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,2,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[6]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,2,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,3,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,4,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn_morphology() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn_morphology() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;//Building axon topology</span><span class="se">\n\n</span><span class="s1">create sectionList[7]</span><span class="se">\n</span><span class="s1">connect sectionList[0](1), sectionList[1](0)</span><span class="se">\n</span><span class="s1">connect sectionList[1](1), sectionList[2](0)</span><span class="se">\n</span><span class="s1">connect sectionList[0](1), sectionList[3](0)</span><span class="se">\n</span><span class="s1">connect sectionList[3](1), sectionList[4](0)</span><span class="se">\n</span><span class="s1">connect sectionList[1](1), sectionList[5](0)</span><span class="se">\n</span><span class="s1">connect sectionList[5](1), sectionList[6](0)</span><span class="se">\n\n\n\n</span><span class="s1">//Set up axon geometry</span><span class="se">\n\n</span><span class="s1">//MAIN AXON</span><span class="se">\n\n</span><span class="s1">sectionList[0]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(0,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(1,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[1]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(3,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[2]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(5,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(6,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[3]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,1,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,2,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[4]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,2,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,3,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,4,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[5]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,1,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,2,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[6]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,2,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,3,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,4,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n\n\n</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn() --failed&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <pre><code>This class is designed to take an existing morphology and write the topology and morphology to a .py file that can be used to run NEURON simulations using existing models.
+
+```
+nrn_writer = Root2Py()
+nrn_writer.primarytest()
+arbor = nrn_writer.test_arbor()
+print(arbor)
+nrn.arbor_to_py(arbor)
+```
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Root2Py</span><span class="p">():</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">pass</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">strip_diameters_for_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">li</span><span class="p">):</span>
+		<span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">li</span><span class="p">):</span>
+			<span class="n">newli</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">li</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+				<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">li</span><span class="p">:</span>
+					<span class="n">newli</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">point</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">section</span><span class="p">])</span>
+				<span class="k">return</span><span class="p">(</span><span class="n">newli</span><span class="p">)</span>
+			
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span><span class="p">([</span><span class="n">point</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">li</span><span class="p">])</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span><span class="p">(</span><span class="n">li</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">lookup_section_by_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">,</span><span class="n">point</span><span class="p">,</span><span class="n">home_branch</span><span class="p">):</span>
+		<span class="n">sec_index</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">if</span> <span class="n">branch</span> <span class="o">==</span> <span class="n">home_branch</span><span class="p">:</span>
+				<span class="k">continue</span>
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]:</span>
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_diameters_for_comparison</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_diameters_for_comparison</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+					<span class="k">return</span><span class="p">(</span><span class="n">sec_index</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">strip_diameters_for_comparison</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strip_diameters_for_comparison</span><span class="p">(</span><span class="n">point</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+				
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">sec_index</span><span class="o">+=</span><span class="mi">1</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">count_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span>
+		<span class="n">sec_count</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]:</span>
+				<span class="n">sec_count</span><span class="o">+=</span><span class="mi">1</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">sec_count</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <pre><code>    builds a dictionary of indices that match the arbor sections and is used to label sections while building the connections/topology
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">build_section_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		
+		<span class="n">section_indices</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">sec_ind</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]:</span>
+				<span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_ind</span><span class="p">)</span>
+				<span class="n">sec_ind</span><span class="o">+=</span><span class="mi">1</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">section_indices</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">build_topology_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span>
+		<span class="n">section_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_section_indices</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="n">connections</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">if</span> <span class="n">branch</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+				<span class="n">ind</span><span class="p">,</span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_section_by_point</span><span class="p">(</span><span class="n">arbor</span><span class="p">,</span><span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">branch</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">ind</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+					<span class="k">raise</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span>
+				
+				<span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(([</span><span class="n">ind</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">position</span><span class="p">)],[</span><span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">]))</span>
+			
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+				<span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(([</span><span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">][</span><span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">section</span><span class="p">)],</span><span class="mi">1</span><span class="p">],[</span><span class="n">section_indices</span><span class="p">[</span><span class="n">branch</span><span class="p">][</span><span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">section</span><span class="p">)]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">connections</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">arbor_to_nrn_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span>
+		<span class="n">topo_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_topology_list</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="n">number_of_sections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_sections</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="n">topo_func</span> <span class="o">=</span> <span class="s1">&#39;#Building axon topology</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+		<span class="n">topo_func</span><span class="o">+=</span> <span class="n">f</span><span class="s1">&#39;sectionList = [h.Section() for i in {number_of_sections}]&#39;</span>
+		
+		<span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">topo_list</span><span class="p">:</span>
+			<span class="n">topo_func</span><span class="o">+=</span><span class="n">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">sectionList[{connection[0][0]}].connect(sectionList[{connection[1][0]}]({connection[1][1]}),{connection[0][1]})</span><span class="se">\n</span><span class="s1"> &#39;</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">topo_func</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">nrn_build_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">section_index</span><span class="p">,</span><span class="n">section_points</span><span class="p">):</span>
+		<span class="n">nrn_command</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+		<span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">section_points</span><span class="p">:</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+				<span class="n">nrn_command</span><span class="o">+=</span><span class="n">f</span><span class="s1">&#39;h.pt3dadd({point[0]},{point[1]},{point[2]},1,sec=sectionList[{section_index}])</span><span class="se">\n</span><span class="s1">&#39;</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">nrn_command</span><span class="o">+=</span><span class="n">f</span><span class="s1">&#39;h.pt3dadd({point[0]},{point[1]},{point[2]},{point[3]},sec=sectionList[{section_index}])</span><span class="se">\n</span><span class="s1">&#39;</span>
+		
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">nrn_command</span><span class="o">+</span><span class="s1">&#39;}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-28'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-28'>#</a>
+      </div>
+      <pre><code>    #Set up axon geometry
+
+
+    #MAIN AXON
+    node[0] = h.Section()
+    h.pt3dadd(-10338,2909.5,-316.24,nodeD,sec=node[0])
+    h.pt3dadd(-10338.3947,2910.3684,-315.94,nodeD,sec=node[0])
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">arbor_to_nrn_morphology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-29'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		<span class="n">nrn_morpho_func</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">#Set up axon geometry</span><span class="se">\n\n</span><span class="s1">#MAIN AXON</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+		<span class="n">section_index</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">arbor</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+			<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">arbor</span><span class="p">[</span><span class="n">branch</span><span class="p">]:</span>
+				<span class="n">nrn_morpho_func</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">nrn_build_section</span><span class="p">(</span><span class="n">section_index</span><span class="p">,</span><span class="n">section</span><span class="p">)</span>
+				<span class="n">section_index</span><span class="o">+=</span><span class="mi">1</span>
+		
+		
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">nrn_morpho_func</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">arbor_to_nrn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arbor</span><span class="p">,</span><span class="n">labels</span><span class="p">,</span><span class="n">target</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;/testmorphology.py&#39;</span><span class="p">):</span>
+		<span class="n">topology_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn_topology</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="n">morphology_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn_morphology</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span>
+		<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">target</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+			<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">topology_function</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">morphology_function</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">topology_function</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">morphology_function</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-31'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-31'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">test_arbor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">arbor</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">arbor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]],[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]],[[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]]</span>
+		<span class="n">arbor</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]],[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]]</span>
+		<span class="n">arbor</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]],[[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">]]]</span>
+		
+		
+		<span class="k">return</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-32'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-32'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">primarytest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">arbor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_arbor</span><span class="p">()</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_section_by_point</span><span class="p">(</span><span class="n">arbor</span><span class="p">,[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;lookup_section_by_point() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;lookup_section_by_point() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_sections</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;count_sections() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;count_sections() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_topology_list</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span> <span class="p">[([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">])]:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;build_section_list() --passed</span><span class="se">\n</span><span class="s1">build_section_indices() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;build_section_list() --failed</span><span class="se">\n</span><span class="s1">build_section_indices() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn_topology</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;//Building axon topology</span><span class="se">\n\n</span><span class="s1">create sectionList[7]</span><span class="se">\n</span><span class="s1">connect sectionList[0](1), sectionList[1](0)</span><span class="se">\n</span><span class="s1">connect sectionList[1](1), sectionList[2](0)</span><span class="se">\n</span><span class="s1">connect sectionList[0](1), sectionList[3](0)</span><span class="se">\n</span><span class="s1">connect sectionList[3](1), sectionList[4](0)</span><span class="se">\n</span><span class="s1">connect sectionList[1](1), sectionList[5](0)</span><span class="se">\n</span><span class="s1">connect sectionList[5](1), sectionList[6](0)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn_topology() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn_topology() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrn_build_section</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">arbor</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span><span class="s1">&#39;sectionList[0]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(0,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(1,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;nrn_build_section() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;nrn_build_section() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn_morphology</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">//Set up axon geometry</span><span class="se">\n\n</span><span class="s1">//MAIN AXON</span><span class="se">\n\n</span><span class="s1">sectionList[0]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(0,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(1,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[1]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(3,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[2]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(5,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(6,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[3]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,1,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,2,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[4]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,2,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,3,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,4,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[5]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,1,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,2,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[6]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,2,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,3,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,4,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn_morphology() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn_morphology() --failed&#39;</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbor_to_nrn</span><span class="p">(</span><span class="n">arbor</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;//Building axon topology</span><span class="se">\n\n</span><span class="s1">create sectionList[7]</span><span class="se">\n</span><span class="s1">connect sectionList[0](1), sectionList[1](0)</span><span class="se">\n</span><span class="s1">connect sectionList[1](1), sectionList[2](0)</span><span class="se">\n</span><span class="s1">connect sectionList[0](1), sectionList[3](0)</span><span class="se">\n</span><span class="s1">connect sectionList[3](1), sectionList[4](0)</span><span class="se">\n</span><span class="s1">connect sectionList[1](1), sectionList[5](0)</span><span class="se">\n</span><span class="s1">connect sectionList[5](1), sectionList[6](0)</span><span class="se">\n\n\n\n</span><span class="s1">//Set up axon geometry</span><span class="se">\n\n</span><span class="s1">//MAIN AXON</span><span class="se">\n\n</span><span class="s1">sectionList[0]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(0,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(1,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[1]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(3,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[2]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(5,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(6,0,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[3]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,1,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,2,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[4]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,2,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,3,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(2,4,0,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[5]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,0,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,1,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,2,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n</span><span class="s1">sectionList[6]{</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,2,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,3,1)</span><span class="se">\n\t</span><span class="s1">pt3dadd(4,0,4,1)</span><span class="se">\n</span><span class="s1">}</span><span class="se">\n\n\n</span><span class="s1">&#39;</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn() --passed&#39;</span><span class="p">)</span>
+		
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="s1">&#39;arbor_to_nrn() --failed&#39;</span><span class="p">)</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

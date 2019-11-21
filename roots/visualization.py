@@ -5,14 +5,14 @@ from roots.swcToolkit import swcToolkit
 
 
 class swcVisualizer():
-	'''
+	"""
 	
 	mfile = 'fileonpath.swc'
 	visualizer = swcVisualizer()
 	visualizer.mplot_mfile(mfile)
 	
 	
-	'''
+	"""
 	
 	def __init__(self):
 		self.swcTool = swcToolkit()
