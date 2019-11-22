@@ -6,6 +6,7 @@ import pickle
 import copy
 import sys
 from scipy.spatial.distance import cdist
+from scipy.spatial.transform import Rotation
 
 class swcToolkit():
 	"""
@@ -59,29 +60,17 @@ class swcToolkit():
 		
 		return(arbor)
 	
-	def rotate_point(self,origin, point, el=0.0,az=0.0):
+	def rotate_points(self,origin, points, el=0.0,az=0.0):
 		"""
 		
 		Rotate a point counterclockwise by a given angle around a given origin.
 		The angle should be given in radians.
 		
-		
 		"""
-		ox, oy, oz = origin
-		px, py, pz = point[:3]
-		radius = point[-1]
-		
-		#do elevation xy plane
-		qx = ox + math.cos(el) * (px - ox) - math.sin(el) * (py - oy)
-		qy = oy + math.sin(el) * (px - ox) + math.cos(el) * (py - oy)
-		px,py = [qx,qy]
-		
-		#do azimuth xz plane
-		qx = ox + math.cos(az) * (px - ox) - math.sin(az) * (pz - oz)
-		qy = py
-		qz = oz + math.sin(az) * (px - ox) + math.cos(az) * (pz - oz)
-		
-		return([qx,qy,qz,radius])
+		r = Rotation.from_rotvec(np.array([el,az,0]))
+		rotated_points = np.array(origin) - np.array(points)
+		rotated_points = r.apply(rotated_points)
+		return(rotated_points+np.array(origin))
 	
 	def rotate_morphology(self,arbor,origin,elevation=0.0,azimuth=0.0): 
 		"""
@@ -97,17 +86,36 @@ class swcToolkit():
 		
 		"""
 		newarbor = {}
-		elevation = elevation*np.pi/180.0
-		azimuth = azimuth*np.pi/180.0
+		pts = []
 		if any(isinstance(i, list) for i in arbor[0]):
+			for branch in arbor.keys():
+				for section in arbor[branch]:
+					for pt in section:
+						pts.append(pt[:3])
+			
+			rotated_points = self.rotate_points(origin,np.array(pts),el=np.pi*elevation/180.0,az=np.pi*azimuth/180.0)
+			pt_index = 0
 			for branch in arbor.keys():
 				newarbor[branch] = []
 				for section in arbor[branch]:
-					newarbor[branch].append([self.rotate_point(origin,point,elevation,azimuth) for point in section])
+					newarbor[branch].append([])
+					for pt in section:
+						newarbor[branch][-1].append(list(rotated_points[pt_index])+[pt[3]])
+						pt_index+=1
 		
 		else:
 			for branch in arbor.keys():
-				newarbor[branch] = [self.rotate_point(origin,point,elevation,azimuth) for point in arbor[branch]]
+				for pt in arbor[branch]:
+					pts.append(pt[:3])
+			
+			rotated_points = self.rotate_points(origin,np.array(pts),el=np.pi*elevation/180.0,az=np.pi*azimuth/180.0)
+			pt_index = 0
+			for branch in arbor.keys():
+				newarbor[branch] = []
+				for pt in arbor[branch]:
+					newarbor[branch].append(list(rotated_points[pt_index])+[pt[3]])
+					pt_index+=1
+		
 		
 		return(newarbor)
 	
