@@ -94,7 +94,7 @@ class Root2Hoc():
 		topo_func+= f'create sectionList[{number_of_sections}]'
 		
 		for connection in topo_list:
-			topo_func+=f'\nconnect sectionList[{connection[0][0]}]({connection[0][1]}), sectionList[{connection[1][0]}]({connection[1][1]})'
+			topo_func+=f'\nconnect sectionList[{connection[1][0]}]({connection[1][1]}), sectionList[{connection[0][0]}]({connection[0][1]})'
 		
 		return(topo_func+'\n')
 	
@@ -205,7 +205,7 @@ class Root2Py():
 	nrn_writer.primarytest()
 	arbor = nrn_writer.test_arbor()
 	print(arbor)
-	nrn.arbor_to_py(arbor)
+	nrn.arbor_to_nrn(arbor)
 	```
 	
 	"""
@@ -285,11 +285,11 @@ class Root2Py():
 	def arbor_to_nrn_topology(self,arbor):
 		topo_list = self.build_topology_list(arbor)
 		number_of_sections = self.count_sections(arbor)
-		topo_func = '#Building axon topology\n\n'
-		topo_func+= f'sectionList = [h.Section() for i in {number_of_sections}]'
+		topo_func = '#Building axon topology\n\nfrom neuron import h\n\n'
+		topo_func+= f'sectionList = [h.Section() for i in range({number_of_sections})]'
 		
 		for connection in topo_list:
-			topo_func+=f'\nsectionList[{connection[0][0]}].connect(sectionList[{connection[1][0]}]({connection[1][1]}),{connection[0][1]})\n '
+			topo_func+=f'\nsectionList[{connection[1][0]}].connect(sectionList[{connection[0][0]}]({connection[0][1]}),{connection[1][1]})'
 		
 		return(topo_func+'\n')
 	
@@ -302,7 +302,7 @@ class Root2Py():
 				nrn_command+=f'h.pt3dadd({point[0]},{point[1]},{point[2]},{point[3]},sec=sectionList[{section_index}])\n'
 		
 		
-		return(nrn_command+'}\n')
+		return(nrn_command)
 	
 	def arbor_to_nrn_morphology(self,arbor):
 		"""
