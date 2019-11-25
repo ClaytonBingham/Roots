@@ -24,3 +24,4 @@ label_intersegments.py
 GrowSTN_morph.py
 adddetail_and_write_to_hoc.py
 load_swc_test.py
+BiophysicsManager.py
