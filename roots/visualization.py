@@ -165,10 +165,10 @@ class swcVisualizer():
 	
 	def plot_electrode(self,arbor,arbor_labels,view=False):
 		keys = ['contact','noncontact','activecontact']
-		values = [self.rgb_to_mlabcolor(item) for item in [(94, 32, 32),(224, 224, 224),(173,42,42)]]
+		values = [self.rgb_to_mlabcolor(item) for item in [(42,56,54),(224, 224, 224),(173,42,42)]]
 		color_dict = dict(zip(keys,values))
 		electrode_parts = []
-		electrode_parts.append(mlab.points3d([arbor[1][0][0][0]],[arbor[1][0][0][1]],[arbor[1][0][0][2]],color=color_dict['noncontact'],scale_factor=arbor[1][0][0][3]*2,mode='sphere',resolution=16))
+		electrode_parts.append(mlab.points3d([arbor[1][0][0][0]],[arbor[1][0][0][1]],[arbor[1][0][0][2]],color=color_dict['noncontact'],scale_factor=arbor[1][0][0][3]*1,mode='sphere',resolution=16))
 		for s,section in enumerate(arbor[0]):
 			if s in arbor_labels:
 				col = color_dict['contact']
@@ -178,7 +178,7 @@ class swcVisualizer():
 			else:
 				col = color_dict['noncontact']
 			
-			electrode_parts.append(mlab.plot3d([sec[0] for sec in section],[sec[1] for sec in section],[sec[2] for sec in section],color=col,tube_radius=section[-1][-1],tube_sides=16))
+			electrode_parts.append(mlab.plot3d([sec[0] for sec in section],[sec[1] for sec in section],[sec[2] for sec in section],color=col,tube_radius=section[-1][-1]/2.0,tube_sides=16))
 		
 		for part in electrode_parts:
 			part.actor.property.backface_culling=True
@@ -214,7 +214,10 @@ class swcVisualizer():
 			myav_vs = [20 for i in range(len(myav_coords)-len(coords))]+[2 for j in range(len(coords))]
 			num_pts = 20
 			tx,ty,tz,tconn,tD = self.create_cylinders(myav_coords,myav_diams,myav_vs,num_pts)
-			mlab.triangular_mesh(tx,ty,tz,tconn,scalars=tD,vmin=1,vmax=20)
+			tmsh = mlab.triangular_mesh(tx,ty,tz,tconn,scalars=tD,vmin=1,vmax=20,representation='wireframe')
+			tmsh.actor.property.frontface_culling = True
+			tmsh.actor.property.backface_culling = True
+			tmsh.actor.property.lighting = False
 		
 		mlab.view(azimuth=0,elevation=0)
 		#	for ii in range(D.shape[1]):
