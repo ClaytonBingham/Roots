@@ -329,7 +329,7 @@ class Roots():
 				openpoints - open points to be clustered and meshed (same as ROOTS argument 'points')
 				source - source point from which a tree will be grown (same as ROOTS argument 'source')
 	"""
-	def __init__(self, source, points,total_length, s_ang, s_dist, b_ang, b_dist, bnum_limit=np.inf,rel_source_dist=100,KMDDproperties={}):
+	def __init__(self, source, points,total_length=np.inf, s_ang=np.pi, s_dist=100, b_ang=np.pi, b_dist=100, bnum_limit=np.inf,rel_source_dist=100,KMDDproperties={}):
 		self.KMDDproperties = KMDDproperties
 		self.source = source
 		self.openpoints = points
