@@ -191,6 +191,9 @@ class swcVisualizer():
 	
 	def mplot_sectioned_arbors(self,arbors,colors = [(0.29, 0.58, 0.67),(0.82, 0.35, 0.24)],view=True):
 		fig = mlab.figure(bgcolor=(42/255.0,56/255.0,54/255.0),size=(1280,720))
+		colors = [(item[0]/255.0,item[1]/255.0,item[2]/255.0) for item in [[0,119,187],[51,187,238],[0,153,136],[238,119,51],[204,51,17],[238,51,119],[221,170,51]]]
+		colors.reverse()
+		col_index = 0
 		for arbor in arbors:
 			myav_coords = []
 			myav_diams = []
@@ -214,10 +217,13 @@ class swcVisualizer():
 			myav_vs = [20 for i in range(len(myav_coords)-len(coords))]+[2 for j in range(len(coords))]
 			num_pts = 20
 			tx,ty,tz,tconn,tD = self.create_cylinders(myav_coords,myav_diams,myav_vs,num_pts)
-			tmsh = mlab.triangular_mesh(tx,ty,tz,tconn,scalars=tD,vmin=1,vmax=20,representation='wireframe')
+			tmsh = mlab.triangular_mesh(tx,ty,tz,tconn,scalars=tD,vmin=1,vmax=20,representation='wireframe',color=colors[col_index])
 			tmsh.actor.property.frontface_culling = True
 			tmsh.actor.property.backface_culling = True
 			tmsh.actor.property.lighting = False
+			col_index+=1
+			if col_index==len(colors):
+				col_index=0
 		
 		mlab.view(azimuth=0,elevation=0)
 		#	for ii in range(D.shape[1]):
