@@ -4,6 +4,9 @@ ROOTS is a package designed to take experimentally determined morphometric data 
 
 Originally this package was written to aid the construction of biologically realistic neural models for use in computational studies of extracellular electrical stimulation but it can be used for diverse neural modeling problems.
 
+[![Roots Example Arbor](https://j.gifs.com/gZKA8j.gif)](https://www.youtube.com/watch?v=wEZ1IfcaiOU&feature=youtu.be)
+
+
 Installation
 Download the package and while in root directory call: 
 ```
