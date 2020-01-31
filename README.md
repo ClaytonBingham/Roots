@@ -4,14 +4,19 @@ ROOTS is a package designed to take experimentally determined morphometric data 
 
 Originally this package was written to aid the construction of biologically realistic neural models for use in computational studies of extracellular electrical stimulation but it can be used for diverse neural modeling problems.
 
-[![Roots Example Arbor](https://j.gifs.com/gZKA8j.gif)](https://www.youtube.com/watch?v=wEZ1IfcaiOU&feature=youtu.be)
-
+![Roots Example Arbor](https://github.com/bingsome/Roots/blob/master/docs/gif.gif)
 
 Installation
 Download the package and while in root directory call: 
 ```
 python setup.py install
 ```
+or 
+
+```
+pip install Roots
+```
+The latest version of Roots will always be available through Github rather than PyPI.
 
 Usage
 
@@ -64,11 +69,17 @@ b_dist - bifurcation distance threshold
 rel_source_dist - (disabled for KMDD mode growing) minimum distance down the active branch on which to find a bifurcation point
 
 KMDDproperties - properties of k-means, delaunay triangulation for 'likely path' sorting for dynamic source updating fibers provided as a dictionary
+
 	KMDDproperties:
+	
 			cluster_reduce - proportion of reduction for k-means clustering (i.e. if cluster_reduce == 0.25 then the number of clusters will equal 25% of the number of open points)
+			
 			tri_edge_length_max - the meshing distance threshold below which delaunay triangulated edges will be returned (i.e. triangulated edges longer than tri_edge_length_max will be removed from the triangulation)
+			
 			openpoints - open points to be clustered and meshed (same as ROOTS argument 'points')
+			
 			source - source point from which a tree will be grown (same as ROOTS argument 'source')
+
 
 ```
 #finally run the make_axon function with the output directory as the input.
