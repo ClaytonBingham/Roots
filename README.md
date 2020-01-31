@@ -70,15 +70,15 @@ rel_source_dist - (disabled for KMDD mode growing) minimum distance down the act
 
 KMDDproperties - properties of k-means, delaunay triangulation for 'likely path' sorting for dynamic source updating fibers provided as a dictionary
 
-	KMDDproperties:
+KMDDproperties:
 	
-			cluster_reduce - proportion of reduction for k-means clustering (i.e. if cluster_reduce == 0.25 then the number of clusters will equal 25% of the number of open points)
+cluster_reduce - proportion of reduction for k-means clustering (i.e. if cluster_reduce == 0.25 then the number of clusters will equal 25% of the number of open points)
 			
-			tri_edge_length_max - the meshing distance threshold below which delaunay triangulated edges will be returned (i.e. triangulated edges longer than tri_edge_length_max will be removed from the triangulation)
+tri_edge_length_max - the meshing distance threshold below which delaunay triangulated edges will be returned (i.e. triangulated edges longer than tri_edge_length_max will be removed from the triangulation)
 			
-			openpoints - open points to be clustered and meshed (same as ROOTS argument 'points')
+openpoints - open points to be clustered and meshed (same as ROOTS argument 'points')
 			
-			source - source point from which a tree will be grown (same as ROOTS argument 'source')
+source - source point from which a tree will be grown (same as ROOTS argument 'source')
 
 
 ```
