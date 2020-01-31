@@ -73,3 +73,8 @@ if __name__ == "__main__":
 	root = make_axon(os.getcwd()+'/')
 ```
 
+If you use Roots or any part of Roots for your own work, kindly cite:
+
+-Bingham, C. S., Mergenthal, A., Bouteiller, J.-M. C., Song, D., Lazzi, G., & Berger, T. W. (2020). ROOTS: An algorithm to generate biologically realistic cortical axons and an application to electroceutical modeling. Frontiers in Computational Neuroscience. In print.
+
+-Bingham, C. S., Bouteiller, J. M. C., Song, D., & Berger, T. W. (2018, July). Graph-Based Models of Cortical Axons for the Prediction of Neuronal Response to Extracellular Electrical Stimulation. In 2018 40th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC) (pp. 1380-1383). IEEE.
