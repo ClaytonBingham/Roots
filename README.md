@@ -7,7 +7,7 @@ Originally this package was written to aid the construction of biologically real
 ![Roots Example Arbor](https://github.com/bingsome/Roots/blob/master/docs/gif.gif)
 
 Installation
-Download the package and while in root directory call: 
+(Recommended) Download the package and while in root directory call: 
 ```
 python setup.py install
 ```
