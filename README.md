@@ -25,6 +25,7 @@ Usage
 from roots.core import Roots,Roots_math
 from roots.kmd import KMDD
 from roots.graphmethods import GraphMethods
+from roots.swcToolkit import swcToolkit
 
 #import a few helper libraries
 import numpy as np
@@ -39,16 +40,24 @@ def return_random_params():
 	d = random.choice(np.arange(300,425,25))
 	return(a,b,c,d)
 
+
 #create source point, target points, and pass them to Roots.
 #call .grow() method and specify output .swc file to write results to
-def make_axon(outputdir):
+def make_axon(kmdd=True,outputdir=os.getcwd()):
+	targets = np.random.rand(300,3)*100.0
+	source_point = list(targets[0])
+	targets = [list(item) for item in targets[1:]]
 	a,b,c,d = return_random_params()
-	source_point,targets = np.random.rand(300,3)*100.0
-	root = Roots(source_point, targets, np.pi/a, b, np.pi/c, d, 100, KMDDproperties=dict(zip(['cluster_reduce','tri_edge_length_max','source','open_points'],[0.25,300,source_inner,new_points[:source_index]+new_points[source_index+1:]])))
-	graph_nodes = root.grow()
-	swcname = outputdir+axe_type+'_'+str(a)+'_'+str(b)+'_'+str(c)+'_'+str(d)+'.swc'
-	root.to_swc(swcname) #save axon to swc
-	return(root)
+	if kmdd:
+		root = Roots(source_point, targets,np.inf, np.pi/a, b, np.pi/c, d, bnum_limit=np.inf, KMDDproperties=dict(zip(['cluster_reduce','tri_edge_length_max','source','open_points'],[1.0,100,source_point,targets])))
+	
+	else:
+		root = Roots(source_point, targets,np.inf, np.pi/a, b, np.pi/c, d, bnum_limit=np.inf,rel_source_dist=7)
+	
+	newpnts = root.grow()
+	swcname = outputdir+'/root_KMDD.swc'
+	swcTool = swcToolkit()
+	swcTool.to_swc(root.arbor,swcname) #save axon to swc
 
 ```
 
@@ -82,9 +91,9 @@ source - source point from which a tree will be grown (same as ROOTS argument 's
 
 
 ```
-#finally run the make_axon function with the output directory as the input.
+#finally run the make_axon function.
 if __name__ == "__main__":
-	root = make_axon(os.getcwd()+'/')
+	root = make_axon()
 ```
 
 If you use Roots or any part of Roots for your own work, kindly cite:

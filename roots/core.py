@@ -131,17 +131,17 @@ class Roots_math():
 		return([self.eucdist3d(thisp,point) for thisp in allpoints])
 	
 	def euc_tree_length(self,arbor):
-		len = 0
+		length = 0
 		for branch in arbor.keys():
 			branchpoints = arbor[branch]
 			for p,point in enumerate(branchpoints[1:]):
 				try:
-					len+=self.eucdist3d(branchpoints[p-1],branchpoints[p])
+					length+=self.eucdist3d(branchpoints[p-1],branchpoints[p])
 				
 				except:
 					print(traceback.format_exc())
 		
-		return(len)
+		return(length)
 	
 	def eucdist3d(self,point1,point2):
 		return(((point2[0]-point1[0])**2 + (point2[1]-point1[1])**2 + (point2[2]-point1[2])**2)**0.5)
@@ -329,11 +329,12 @@ class Roots():
 				openpoints - open points to be clustered and meshed (same as ROOTS argument 'points')
 				source - source point from which a tree will be grown (same as ROOTS argument 'source')
 	"""
-	def __init__(self, source, points,total_length=np.inf, s_ang=np.pi, s_dist=100, b_ang=np.pi, b_dist=100, bnum_limit=np.inf,rel_source_dist=100,KMDDproperties={}):
+	def __init__(self, source, points,total_length=np.inf, branch_len_limiter=np.inf, s_ang=np.pi, s_dist=100, b_ang=np.pi, b_dist=100, bnum_limit=np.inf,rel_source_dist=100,KMDDproperties={}):
 		self.KMDDproperties = KMDDproperties
 		self.source = source
 		self.openpoints = points
 		self.tot_len_threshold = total_length
+		self.branch_length_limiter = branch_len_limiter
 		self.bnum_limit = bnum_limit
 		self.s_ang = s_ang
 		self.s_dist = s_dist
@@ -381,6 +382,22 @@ class Roots():
 		else:
 			return(True)
 	
+	def is_acceptable_branch_length(self):
+		last_branch = list(self.arbor.keys())[-1]
+		length = 0
+		branchpoints = self.arbor[last_branch]
+		for p,point in enumerate(branchpoints[1:]):
+			try:
+				length+=self.math.eucdist3d(branchpoints[p-1],branchpoints[p])
+			except:
+				continue
+		
+		if length > self.branch_length_limiter:
+			return(False)
+		else:
+			return(True)
+	
+	
 	def is_acceptable_number_of_branches(self):
 		if len(self.arbor.keys()) > self.bnum_limit:
 			return(False)
@@ -416,6 +433,9 @@ class Roots():
 				self.clean_points(nearest) #gets rid of added point from the set of open points
 				number_of_points = number_of_points + 1
 				stillextending = self.is_acceptable_total_length()
+				if stillextending:
+					stillextending = self.is_acceptable_branch_length()
+				
 				continue
 			
 			stillextending = False

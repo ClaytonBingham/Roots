@@ -378,7 +378,7 @@ class Microstructures():
 		
 		return(arbor)
 	
-	def add_microstructures_to_arbor(self,arbor,mbranches,bbranches):
+	def add_microstructures_to_arbor(self,arbor,mbranches,bbranches,myelingeometry=[1,1,3,8,3,1],boutongeometry=[28,4]):
 		"""
 		
 		This function adds myelin and boutons to an axon arbor. 
@@ -391,8 +391,8 @@ class Microstructures():
 		
 		"""
 		arbor_labels = dict(zip([key for key in arbor.keys()],[[] for key in arbor.keys()]))
-		arbor,arbor_labels = self.myelinate_branches(arbor,arbor_labels,mbranches)
-		arbor,arbor_labels = self.bouton_branches(arbor,arbor_labels,bbranches)
+		arbor,arbor_labels = self.myelinate_branches(arbor,arbor_labels,mbranches,myelin_geometry=myelingeometry) #myelin_geometry=[1,1,3,8,3,1]
+		arbor,arbor_labels = self.bouton_branches(arbor,arbor_labels,bbranches,bouton_geometry=boutongeometry) #bouton_geometry=[28,4]
 		arbor = self.ensure_precision(arbor)
 		return(arbor,arbor_labels)
 	

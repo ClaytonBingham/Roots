@@ -114,6 +114,9 @@ class swcVisualizer():
 		
 		return x, y, z, connections, D
 	
+	def insert_midpoint(self,a,b):
+		midpoint = [item/2.0 for item in [a[0]+b[0],a[1]+b[1],a[2]+b[2],a[3]+b[3]]]
+		return([list(a),midpoint,list(b)])
 	
 	def segment_branch(self,branch):
 		segments =[]
@@ -146,22 +149,31 @@ class swcVisualizer():
 	def rgb_to_mlabcolor(self,rgb):
 		return((rgb[0]/255.0,rgb[1]/255.0,rgb[2]/255.0))
 	
-	def mplot_sectioned_arbor_simplified(self,arbor,arbor_labels):
+	def mplot_sectioned_arbor_simplified(self,arbor,arbor_labels,view=True,DefaultDiameters=True):
 		fig = mlab.figure(bgcolor=(42/255.0,56/255.0,54/255.0),size=(1280,720))
 		keys = ['node','paranode1','paranode2','internode','interbouton','bouton']
+		diams = [0.75,1.54,1.54,1.54,0.2,1.0]
 		values = [self.rgb_to_mlabcolor(item) for item in [(255, 22, 84),(112, 193, 179),(178, 219, 191),(36, 123, 160),((243, 255, 189)),(255, 22, 84)]]
 		color_dict = dict(zip(keys,values))
+		diam_dict = dict(zip(keys,diams))
+		mobjs = []
 		for branch in arbor.keys():
-			if branch not in [0,1]:
-				continue
+#			if branch not in [0,1]:
+#				continue
 			
 			for s,section in enumerate(arbor[branch]):
-				mlab.plot3d([sec[0] for sec in section],[sec[1] for sec in section],[sec[2] for sec in section],color=color_dict[arbor_labels[branch][s]],tube_radius=section[-1][-1],tube_sides=6)
+				if DefaultDiameters:
+					mobjs.append(mlab.plot3d([sec[0] for sec in section],[sec[1] for sec in section],[sec[2] for sec in section],color=color_dict[arbor_labels[branch][s]],tube_radius=diam_dict[arbor_labels[branch][s]],tube_sides=6,representation='wireframe'))
+				else:
+					mobjs.append(mlab.plot3d([sec[0] for sec in section],[sec[1] for sec in section],[sec[2] for sec in section],color=color_dict[arbor_labels[branch][s]],tube_radius=section[-1][-1],tube_sides=6))
+				
+				mobjs[-1].actor.property.lighting = False
 		
 		mlab.view(azimuth=0,elevation=0)
 		
-		mlab.show()
-	
+		if view:
+			mlab.show()
+			
 	
 	def plot_electrode(self,arbor,arbor_labels,view=False):
 		keys = ['contact','noncontact','activecontact']
@@ -268,7 +280,7 @@ class swcVisualizer():
 		myav_vs = [20 for i in range(len(myav_coords)-len(coords))]+[2 for j in range(len(coords))]
 		num_pts = 20
 		tx,ty,tz,tconn,tD = self.create_cylinders(myav_coords,myav_diams,myav_vs,num_pts)
-		mlab.triangular_mesh(tx,ty,tz,tconn,scalars=tD,vmin=1,vmax=20)
+		mlab.triangular_mesh(tx,ty,tz,tconn,scalars=tD,vmin=1,vmax=20,representation='wireframe')
 		colorind+=1
 		mlab.view(azimuth=0,elevation=0)
 	#	for ii in range(D.shape[1]):
