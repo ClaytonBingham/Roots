@@ -5,6 +5,7 @@ import os
 import pickle
 import copy
 import sys
+import scipy
 from scipy.spatial.distance import cdist
 from scipy.spatial.transform import Rotation
 
@@ -49,7 +50,7 @@ class swcToolkit():
 		returns the shifted morphology
 		
 		"""
-		if any(isinstance(i, list) for i in arbor[0]):
+		if any(isinstance(i, list) for i in arbor[0][0]):
 			for branch in arbor.keys():
 				for section in arbor[branch]:
 					arbor[branch][arbor[branch].index(section)] = [self.shift_point(point[:3],vector)+[point[-1]] for point in section]
@@ -60,19 +61,19 @@ class swcToolkit():
 		
 		return(arbor)
 	
-	def rotate_points(self,origin, points, el=0.0,az=0.0):
+	def rotate_points(self,origin, points, ax=0.0,ay=0.0,az=0.0):
 		"""
 		
 		Rotate a point counterclockwise by a given angle around a given origin.
 		The angle should be given in radians.
 		
 		"""
-		r = Rotation.from_rotvec(np.array([el,az,0]))
-		rotated_points = np.array(origin) - np.array(points)
+		r = Rotation.from_rotvec(np.array([ax,ay,az]))
+		rotated_points = np.array(points) - np.array(origin)
 		rotated_points = r.apply(rotated_points)
 		return(rotated_points+np.array(origin))
 	
-	def rotate_morphology(self,arbor,origin,elevation=0.0,azimuth=0.0): 
+	def rotate_morphology(self,arbor,origin,about_x=0.0,about_y=0.0,about_z=0.0): 
 		"""
 		
 		Rotate a morphology around an origin according to user specified elevation and azimuth
@@ -87,13 +88,13 @@ class swcToolkit():
 		"""
 		newarbor = {}
 		pts = []
-		if any(isinstance(i, list) for i in arbor[0]):
+		if any(isinstance(i, list) for i in arbor[0][0]):
 			for branch in arbor.keys():
 				for section in arbor[branch]:
 					for pt in section:
 						pts.append(pt[:3])
 			
-			rotated_points = self.rotate_points(origin,np.array(pts),el=np.pi*elevation/180.0,az=np.pi*azimuth/180.0)
+			rotated_points = self.rotate_points(origin,np.array(pts),ax=np.pi*about_x/180.0,ay=np.pi*about_y/180.0,az=np.pi*about_z/180.0)
 			pt_index = 0
 			for branch in arbor.keys():
 				newarbor[branch] = []
@@ -108,7 +109,7 @@ class swcToolkit():
 				for pt in arbor[branch]:
 					pts.append(pt[:3])
 			
-			rotated_points = self.rotate_points(origin,np.array(pts),el=np.pi*elevation/180.0,az=np.pi*azimuth/180.0)
+			rotated_points = self.rotate_points(origin,np.array(pts),ax=np.pi*about_x/180.0,ay=np.pi*about_y/180.0,az=np.pi*about_z/180.0)
 			pt_index = 0
 			for branch in arbor.keys():
 				newarbor[branch] = []
@@ -195,7 +196,22 @@ class swcToolkit():
 				children.append(n)
 		return(children)
 	
-	def load(self,fname,asTree=True,interbifurcated=True):
+
+	
+	
+	def load_morph_and_section_types(self,fname):
+		label_dict=dict(zip([1,2,3,4,5,6],['soma','axon','basal','apical','tuft','custom']))
+		morph = self.load(fname)
+		dat = self.load_swc_as_table(fname)
+		labels = {}
+		for key in morph.keys():
+			labels[key] = []
+			for section in morph[key][1:]:
+				labels[key].append(label_dict[int(dat.loc[(dat['x']==section[0])&(dat['y']==section[1])&(dat['z']==section[2])]['T'])])
+		
+		return(labels,morph)
+		
+	def load_swc_as_table(self,fname):
 		self.prepend_headers(fname)
 		dat = pd.read_table(fname,delim_whitespace=True)
 		self.cut_headers(fname)
@@ -203,8 +219,11 @@ class swcToolkit():
 			dat[col] = dat[col].astype('int')
 		for col in ['x','y','z','R']:
 			dat[col] = dat[col].astype('float')
-	
 		
+		return(dat)
+	
+	def load(self,fname,asTree=True,interbifurcated=True):
+		dat = self.load_swc_as_table(fname)
 		if asTree:
 			if not interbifurcated:
 				arbor = {}
@@ -312,7 +331,7 @@ class swcToolkit():
 			0 = undefined
 			1 = soma
 			2 = axon
-			3 = dendrite
+			3 = basal dendrite
 			4 = apical dendrite
 			5 = fork point
 			6 = end point
